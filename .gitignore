@@ -1,0 +1,10 @@
+# .gitignore file tells Git which files to ignore when committing your project
+# to the Git repository. .gitignore is located in the root directory of your
+# repo. The .gitignore file itself is a plain text document.
+
+# Byte-compiled / optimized / DLL files
+__pycache__/
+
+# Python virtual environment
+venv/
+
