@@ -7,6 +7,7 @@ from wtforms import StringField, SubmitField, PasswordField, BooleanField
 from wtforms.validators import DataRequired, Email, EqualTo, Length
 import email_validator
 from flask_sqlalchemy import SQLAlchemy
+from flask_login import UserMixin
 
 basedir = os.path.abspath(os.path.dirname(__file__))
 
@@ -35,10 +36,12 @@ class LoginForm(FlaskForm):
     remember_me = BooleanField('Keep me logged in')
     submit = SubmitField('Log In')
 
-class User(db.Model):
+class User(db.Model, UserMixin):
     __tablename__ = 'users'
     id = db.Column(db.Integer, primary_key = True)
+    email = db.Column(db.String(64), unique=True)
     username = db.Column(db.String(64), unique=True, index=True)
+    password = db.Column(db.String(128))
 
     def __repr__(self):
         return '<User %r>' % self.username
