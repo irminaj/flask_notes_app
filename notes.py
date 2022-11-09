@@ -48,10 +48,14 @@ class User(db.Model, UserMixin):
         return '<User %r>' % self.username
 
 class Note(db.Model):
+    __tablename__ = 'notes'
     id = db.Column(db.Integer, primary_key = True)
     name = db.Column(db.String(500))
     data = db.Column(db.String(10000))
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
+
+class Category(db.Model):
+
 
 
 @app.route('/')
