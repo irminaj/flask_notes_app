@@ -1,14 +1,26 @@
+import os
+
 from flask import Flask, render_template, request
 from flask_bootstrap import Bootstrap5
 from flask_wtf import FlaskForm
 from wtforms import StringField, SubmitField, PasswordField, BooleanField
 from wtforms.validators import DataRequired, Email, EqualTo, Length
 import email_validator
+from flask_sqlalchemy import SQLAlchemy
+
+basedir = os.path.abspath(os.path.dirname(__file__))
 
 app = Flask(__name__)
-bootstrap = Bootstrap5(app)
 
 app.config['SECRET_KEY'] = 'SRKyycK9I35J1qzxPbKleSdDc4PreDlP'
+app.config['SQLALCHEMY_DATABASE_URI'] = "sqlite:///" + os.path.join(
+    basedir, "data.sqlite"
+)
+app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
+
+bootstrap = Bootstrap5(app)
+db = SQLAlchemy(app)
+
 
 class RegistrationForm(FlaskForm):
     email = StringField('Email', validators=[DataRequired(), Length(1, 64), Email()])
@@ -19,7 +31,7 @@ class RegistrationForm(FlaskForm):
 
 class LoginForm(FlaskForm):
     email = StringField('Email', validators=[DataRequired(), Email()])
-    password = PasswordField('Password', validators=[DataRequired()])
+    password = PasswordField('Password', validators=[DataRequired()]) 
     remember_me = BooleanField('Keep me logged in')
     submit = SubmitField('Log In')
 
