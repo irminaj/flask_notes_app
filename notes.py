@@ -42,9 +42,17 @@ class User(db.Model, UserMixin):
     email = db.Column(db.String(64), unique=True)
     username = db.Column(db.String(64), unique=True, index=True)
     password = db.Column(db.String(128))
+    notes = db.relationship('Note')
 
     def __repr__(self):
         return '<User %r>' % self.username
+
+class Note(db.Model):
+    id = db.Column(db.Integer, primary_key = True)
+    name = db.Column(db.String(500))
+    data = db.Column(db.String(10000))
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
+
 
 @app.route('/')
 def index():
