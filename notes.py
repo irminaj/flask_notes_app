@@ -47,18 +47,29 @@ class User(db.Model, UserMixin):
     def __repr__(self):
         return '<User %r>' % self.username
 
+note_category = db.Table('note_category', 
+    db.Column('note.id', db.Integer, db.ForeignKey('category.id')),
+    db.Column('category.id', db.Integer, db.ForeignKey('note.id'))
+    )
+
 class Note(db.Model):
     __tablename__ = 'notes'
     id = db.Column(db.Integer, primary_key = True)
     name = db.Column(db.String(500))
     data = db.Column(db.String(10000))
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
+    categories = db.relationship('Category', secondary=note_category, backref='notes')
+
+    def __repr__(self):
+        return '<Note %r>' % self.name
 
 class Category(db.Model):
     __tablename__ = 'categories'
     id = db.Column(db.Integer, primary_key = True)
     name = db.Column(db.String(100), unique=True)
 
+    def __repr__(self):
+        return '<Category %r>' % self.name
 
 
 @app.route('/')
