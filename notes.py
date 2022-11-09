@@ -1,6 +1,6 @@
 import os
 
-from flask import Flask, render_template, request
+from flask import Flask, render_template, flash, url_for, redirect
 from flask_bootstrap import Bootstrap5
 from flask_wtf import FlaskForm
 from wtforms import StringField, SubmitField, PasswordField, BooleanField
@@ -79,11 +79,14 @@ def index():
 @app.route('/register', methods=['GET', 'POST'])
 def register():
     form = RegistrationForm()
-    if request.method == 'POST':
-        email = request.form.get('email')
-        username = request.form.get('username')
-        password = request.form.get('password')
-        password2 = request.form.get('password2')
+    if form.validate_on_submit():
+        user = User(email=form.email.data,
+                    username=form.username.data,
+                    password=form.password.data)
+        db.session.add(user)
+        db.session.commit()
+        flash('You can now login.')
+        return redirect(url_for('login.html'))
     return render_template('register.html', form=form)
 
 @app.route('/login')
