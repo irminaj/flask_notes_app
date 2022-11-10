@@ -48,8 +48,8 @@ class User(db.Model, UserMixin):
         return '<User %r>' % self.username
 
 note_category = db.Table('note_category', 
-    db.Column('note.id', db.Integer, db.ForeignKey('category.id')),
-    db.Column('category.id', db.Integer, db.ForeignKey('note.id'))
+    db.Column('notes.id', db.Integer, db.ForeignKey('categories.id')),
+    db.Column('categories.id', db.Integer, db.ForeignKey('notes.id'))
     )
 
 class Note(db.Model):
@@ -57,7 +57,7 @@ class Note(db.Model):
     id = db.Column(db.Integer, primary_key = True)
     name = db.Column(db.String(500))
     data = db.Column(db.String(10000))
-    user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
+    user_id = db.Column(db.Integer, db.ForeignKey('users.id'))
     categories = db.relationship('Category', secondary=note_category, backref='notes')
 
     def __repr__(self):
