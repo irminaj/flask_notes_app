@@ -8,7 +8,7 @@ from wtforms.validators import DataRequired, Email, EqualTo, Length
 import email_validator
 from flask_sqlalchemy import SQLAlchemy
 from flask_migrate import Migrate
-from flask_login import UserMixin, login_user, login_required, current_user, LoginManager
+from flask_login import UserMixin, login_user, login_required, logout_user, current_user, LoginManager
 from werkzeug.security import generate_password_hash, check_password_hash
 
 basedir = os.path.abspath(os.path.dirname(__file__))
@@ -130,3 +130,10 @@ def login():
 @login_required
 def dashboard():
     return render_template('dashboard.html')
+
+@app.route('/logout')
+@login_required
+def logout():
+    logout_user()
+    flash('You have been logged out.')
+    return redirect(url_for('index'))
