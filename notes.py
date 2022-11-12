@@ -135,8 +135,7 @@ def login():
 @app.route('/dashboard', methods=['GET', 'POST'])
 @login_required
 def dashboard():
-    notes = Note.query.all()
-    return render_template('dashboard.html', notes=notes)
+    return render_template('dashboard.html')
 
 @app.route('/logout')
 @login_required
@@ -144,6 +143,12 @@ def logout():
     logout_user()
     flash('You have been logged out.')
     return redirect(url_for('index'))
+
+@app.route('/notes', methods=['GET', 'POST'])
+@login_required
+def notes():
+    notes = Note.query.all()
+    return render_template('notes.html', notes=notes)
 
 @app.route('/add_note', methods=['GET', 'POST'])
 def add_note():
@@ -153,4 +158,21 @@ def add_note():
         db.session.add(note)
         db.session.commit()
         return redirect(url_for('dashboard'))
+    else:
+        flash('You need to login')
     return render_template('add_note.html', form=form)
+
+@app.route('/notes/edit/<int:id>', methods=['GET', 'POST'])
+def edit_note(id):
+    note = Note.query.get_or_404(id)
+    form = NoteForm()
+    if form.validate_on_submit():
+        note.title = form.title.data
+        note.content = form.content.data
+        db.session.add(note)
+        db.session.commit()
+        flash('The note has been updated')
+        return redirect(url_for('.notes', id=note.id))
+    form.title.data = note.title
+    form.content.data = note.content
+    return render_template('edit_note.html', form=form)
