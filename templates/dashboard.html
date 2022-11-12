@@ -1,11 +1,24 @@
 {% extends 'base.html' %}
 
+{% from 'bootstrap5/form.html' import render_form %}
 
 {% block content %}
 {{ super() }}
+<div style="margin-top: 50px;" class="container">
+    <h3>Notes list</h3>
 
-<div class="page-header">
-<h1>You are Logged In!</h1>
+    <ul class="posts">
+        {% for note in notes %}
+        <li class="post">
+            <div class="post-title">
+                {{ note.title }}
+            </div>
+            <div class="post-content">
+                {{ note.content }}
+            </div>
+        </li>
+        {% endfor %}
+    </ul>
+    
 </div>
-
 {% endblock %}
