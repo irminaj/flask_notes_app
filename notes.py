@@ -82,8 +82,8 @@ note_category = db.Table('note_category',
 class Note(db.Model):
     __tablename__ = 'notes'
     id = db.Column(db.Integer, primary_key = True)
-    name = db.Column(db.String(500))
-    data = db.Column(db.String(10000))
+    title = db.Column(db.String(500))
+    content = db.Column(db.String(10000))
     user_id = db.Column(db.Integer, db.ForeignKey('users.id'))
     categories = db.relationship('Category', secondary=note_category, backref='notes')
 
@@ -148,4 +148,10 @@ def logout():
 def add_note():
     form = NoteForm()
     if form.validate_on_submit():
-        post = Note()
+        note = Note(title=form.title.data, content=form.content.data,
+                    author=current_user._get_current_object())
+        db.session.add(note)
+        db.session.commit()
+        return redirect(url_for('dashboard'))
+    notes = Note.query.all()
+    return render_template('note.html', form=form, notes=notes)
