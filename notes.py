@@ -135,7 +135,8 @@ def login():
 @app.route('/dashboard', methods=['GET', 'POST'])
 @login_required
 def dashboard():
-    return render_template('dashboard.html')
+    notes = Note.query.all()
+    return render_template('dashboard.html', notes=notes)
 
 @app.route('/logout')
 @login_required
@@ -148,10 +149,8 @@ def logout():
 def add_note():
     form = NoteForm()
     if form.validate_on_submit():
-        note = Note(title=form.title.data, content=form.content.data,
-                    user_id=current_user._get_current_object())
+        note = Note(title=form.title.data, content=form.content.data)
         db.session.add(note)
         db.session.commit()
         return redirect(url_for('dashboard'))
-    notes = Note.query.all()
-    return render_template('add_note.html', form=form, notes=notes)
+    return render_template('add_note.html', form=form)
