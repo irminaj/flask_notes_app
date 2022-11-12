@@ -16,6 +16,7 @@
             <div class="post-content">
                 {{ note.content }}
             </div>
+            <a href="{{ url_for('edit_note',id=note.id) }}" class="btn btn-outline-secondary btn-sm">Edit note</a>
         </li>
         {% endfor %}
     </ul>
