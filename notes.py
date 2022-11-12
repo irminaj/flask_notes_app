@@ -176,3 +176,17 @@ def edit_note(id):
     form.title.data = note.title
     form.content.data = note.content
     return render_template('edit_note.html', form=form)
+
+@app.route('/notes/delete/<int:id>', methods=['GET', 'POST'])
+def delete_note(id):
+    note_to_delete = Note.query.get_or_404(id)
+    try:
+        db.session.delete(note_to_delete)
+        db.session.commit()
+        flash('Note was deleted')
+        notes = Note.query.all()
+        return render_template('notes.html', notes=notes)
+    except: 
+        flash('There was a problem deleting note. Try again')
+        notes = Note.query.all()
+        return render_template('notes.html', notes=notes)
