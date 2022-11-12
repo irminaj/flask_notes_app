@@ -48,8 +48,8 @@ class LoginForm(FlaskForm):
     submit = SubmitField('Log In')
 
 class NoteForm(FlaskForm):
-    name = StringField('Title', validators=[DataRequired()])
-    data = StringField('Content', validators=[DataRequired()], widget=TextArea())
+    title = StringField('Title', validators=[DataRequired()])
+    content = StringField('Content', validators=[DataRequired()], widget=TextArea())
     submit = SubmitField('Create')
 
 class User(db.Model, UserMixin):
@@ -143,3 +143,9 @@ def logout():
     logout_user()
     flash('You have been logged out.')
     return redirect(url_for('index'))
+
+@app.route('/add-note', methods=['GET', 'POST'])
+def add_note():
+    form = NoteForm()
+    if form.validate_on_submit():
+        post = Note()
