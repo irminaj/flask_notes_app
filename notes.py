@@ -144,14 +144,14 @@ def logout():
     flash('You have been logged out.')
     return redirect(url_for('index'))
 
-@app.route('/add-note', methods=['GET', 'POST'])
+@app.route('/add_note', methods=['GET', 'POST'])
 def add_note():
     form = NoteForm()
     if form.validate_on_submit():
         note = Note(title=form.title.data, content=form.content.data,
-                    author=current_user._get_current_object())
+                    user_id=current_user._get_current_object())
         db.session.add(note)
         db.session.commit()
         return redirect(url_for('dashboard'))
     notes = Note.query.all()
-    return render_template('note.html', form=form, notes=notes)
+    return render_template('add_note.html', form=form, notes=notes)
