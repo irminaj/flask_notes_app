@@ -5,6 +5,7 @@ from flask_bootstrap import Bootstrap5
 from flask_wtf import FlaskForm
 from wtforms import StringField, SubmitField, PasswordField, BooleanField
 from wtforms.validators import DataRequired, Email, EqualTo, Length
+from wtforms.widgets import TextArea
 import email_validator
 from flask_sqlalchemy import SQLAlchemy
 from flask_migrate import Migrate
@@ -45,6 +46,11 @@ class LoginForm(FlaskForm):
     password = PasswordField('Password', validators=[DataRequired()]) 
     remember_me = BooleanField('Keep me logged in')
     submit = SubmitField('Log In')
+
+class NoteForm(FlaskForm):
+    name = StringField('Title', validators=[DataRequired()])
+    data = StringField('Content', validators=[DataRequired()], widget=TextArea())
+    submit = SubmitField('Create')
 
 class User(db.Model, UserMixin):
     __tablename__ = 'users'
