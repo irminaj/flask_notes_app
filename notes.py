@@ -52,6 +52,10 @@ class NoteForm(FlaskForm):
     content = StringField('Content', validators=[DataRequired()], widget=TextArea())
     submit = SubmitField('Create')
 
+class SearchForm(FlaskForm):
+    searched = StringField('Searched', validators=[DataRequired()])
+    submit = SubmitField('Search')
+
 class User(db.Model, UserMixin):
     __tablename__ = 'users'
     id = db.Column(db.Integer, primary_key = True)
@@ -97,6 +101,7 @@ class Category(db.Model):
 
     def __repr__(self):
         return '<Category %r>' % self.name
+
 
 
 @app.route('/')
@@ -203,3 +208,52 @@ def delete_note(id):
         flash("You don't have a permission to delete this note")
         notes = Note.query.all()
         return render_template('notes.html', notes=notes)
+
+### Search options ###
+
+# @app.context_processor
+# def base():
+#     form = SearchForm()
+#     return dict(form=form)
+
+# @app.route('/search', methods=['POST', 'GET'])
+# def search():
+#     form = SearchForm()
+#     notes = Note.query
+#     if form.validate_on_submit():
+#         notes.searched = form.searched.data
+#         notes = notes.filter(Note.title.like('%' + notes.searched + '%'))
+#         notes = notes.order_by(Note.title).all()
+#         return render_template('search.html', form=form, searched = notes.searched, notes=notes)
+#     else:
+#         flash('No mathces were found')
+#         notes = Note.query.all()
+#         return render_template('notes.html', notes=notes)
+
+# @app.route('/search', methods=['GET', 'POST'])
+# def search():
+#     searched = request.args.get('searched')
+#     if searched:
+#         notes = Note.query.filter(Note.title.contains(searched))
+#     else:
+#         notes = Note.query.all()
+#     return render_template('notes.html', notes=notes)
+
+# @app.route('/search', methods=['GET', 'POST'])
+# def search():
+#     form=SearchForm()
+#     if request.method == 'POST' and form.validate_on_submit():
+#         return redirect((url_for('search', query=form.search.data)))
+#     return render_template('notes.html')
+
+@app.route('/search', methods=['GET', 'POST'])
+def search():
+    q = request.args.get('q')
+    if q:
+        notes = Note.query.filter(Note.title.contains(q))
+        return render_template('notes.html', notes=notes)
+    else: 
+        notes = Note.query.all()
+        flash('No posts were found')
+        return render_template(url_for('notes', notes=notes))
+    
