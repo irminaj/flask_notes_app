@@ -52,6 +52,10 @@ class NoteForm(FlaskForm):
     content = StringField('Content', validators=[DataRequired()], widget=TextArea())
     submit = SubmitField('Create')
 
+class CategoryForm(FlaskForm):
+    name = StringField('Category name', validators=[DataRequired()])
+    submit = SubmitField('Create')
+
 # SearchForm, paziureti ar reikes, bet panasu, kad ne 
 
 class SearchForm(FlaskForm):
@@ -199,7 +203,7 @@ def delete_note(id):
             db.session.commit()
             flash('Note was deleted')
             notes = Note.query.all()
-            return render_template('notes.html', notes=notes)
+            return render_template('.notes.html', notes=notes)
         except: 
             flash('There was a problem deleting note. Try again')
             notes = Note.query.all()
@@ -208,6 +212,78 @@ def delete_note(id):
         flash("You don't have a permission to delete this note")
         notes = Note.query.all()
         return render_template('notes.html', notes=notes)
+
+### Categories ###
+
+### Display all categories ###
+
+@app.route('/categories', methods=['GET', 'POST'])
+def categories():
+    categories = Category.query.all()
+    return render_template('categories.html', categories=categories)
+
+### Create new category ###
+
+@app.route('/add_categories', methods=['GET', 'POST'])
+@login_required
+def add_categories():
+    form = CategoryForm()
+    if form.validate_on_submit():
+        category = Category(name=form.name.data)
+        db.session.add(category)
+        db.session.commit()
+        return redirect(url_for('categories'))
+    else:
+        flash('You need to login')
+    return render_template('add_categories.html', form=form)
+
+### Edit category ###
+
+@app.route('/categories/edit/<int:id>', methods=['GET', 'POST'])
+@login_required
+def edit_category(id):
+    category = Category.query.get_or_404(id)
+    form = CategoryForm()
+    if form.validate_on_submit():
+        category.name = form.name.data
+        db.session.add(category)
+        db.session.commit()
+        flash('The category has been updated')
+        return redirect(url_for('.categories', id=category.id))
+    form.name.data = category.name
+    return render_template('edit_note.html', form=form)
+
+### Delete category ###
+
+@app.route('/categories/delete/<int:id>', methods=['GET', 'POST'])
+@login_required
+def delete_category(id):
+    category_to_delete = Category.query.get_or_404(id)
+    try:
+        db.session.delete(category_to_delete)
+        db.session.commit()
+        flash('Category was deleted')
+        categories = Category.query.all()
+        return render_template('.categories.html', categories=categories)
+    except: 
+        flash('There was a problem deleting note. Try again')
+        categories = Category.query.all()
+        return render_template('categories.html', categories=categories)
+
+### Search notes by the title ###
+
+@app.route('/search', methods=['GET', 'POST'])
+def search():
+    q = request.args.get('q')
+    if q:
+        notes = Note.query.filter(Note.title.contains(q))
+        return render_template('notes.html', notes=notes)
+    else: 
+        notes = Note.query.all()
+        flash('No posts were found')
+        return render_template(url_for('notes', notes=notes))
+
+
 
 ### Search options ###
 
@@ -246,13 +322,4 @@ def delete_note(id):
 #         return redirect((url_for('search', query=form.search.data)))
 #     return render_template('notes.html')
 
-@app.route('/search', methods=['GET', 'POST'])
-def search():
-    q = request.args.get('q')
-    if q:
-        notes = Note.query.filter(Note.title.contains(q))
-        return render_template('notes.html', notes=notes)
-    else: 
-        notes = Note.query.all()
-        flash('No posts were found')
-        return render_template(url_for('notes', notes=notes))
+

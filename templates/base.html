@@ -8,6 +8,7 @@
     <a class="navbar=brand">{{ render_nav_item('add_note', 'Add note') }}</a>
     <a class="navbar=brand">{{ render_nav_item('dashboard', 'Dashboard') }}<a>
     <a class="navbar=brand">{{ render_nav_item('notes', 'Notes') }}</a>
+    <a href="navbar=brand">{{ render_nav_item('categories', 'Categories') }}</a>
   <form method="GET" action="{{ url_for('search') }}" class="d-flex align-self-end">
     <input class="form-control me-2" type="search" placeholder="Search", name="q" />
     <button class="btn btn-outline-secondary" type="submit">Search</button>
