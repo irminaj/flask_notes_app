@@ -52,6 +52,8 @@ class NoteForm(FlaskForm):
     content = StringField('Content', validators=[DataRequired()], widget=TextArea())
     submit = SubmitField('Create')
 
+# SearchForm, paziureti ar reikes, bet panasu, kad ne 
+
 class SearchForm(FlaskForm):
     searched = StringField('Searched', validators=[DataRequired()])
     submit = SubmitField('Search')
@@ -62,7 +64,7 @@ class User(db.Model, UserMixin):
     email = db.Column(db.String(64), unique=True)
     username = db.Column(db.String(64), unique=True, index=True)
     password_hash = db.Column(db.String(128))
-    notes = db.relationship('Note')
+    notes = db.relationship('Note', backref='user')
 
     @property
     def password(self):
@@ -101,8 +103,6 @@ class Category(db.Model):
 
     def __repr__(self):
         return '<Category %r>' % self.name
-
-
 
 @app.route('/')
 def index():
@@ -159,7 +159,7 @@ def notes():
 def add_note():
     form = NoteForm()
     if form.validate_on_submit():
-        note = Note(title=form.title.data, content=form.content.data)
+        note = Note(title=form.title.data, content=form.content.data, user_id=current_user.id)
         db.session.add(note)
         db.session.commit()
         return redirect(url_for('dashboard'))
@@ -256,4 +256,3 @@ def search():
         notes = Note.query.all()
         flash('No posts were found')
         return render_template(url_for('notes', notes=notes))
-    
