@@ -179,11 +179,16 @@ def add_note():
 @app.route('/notes/edit/<int:id>', methods=['GET', 'POST'])
 @login_required
 def edit_note(id):
+    categories = db.session.query(Category).all()
+    categories_list = [(categ.id, categ.name) for categ in categories]
     note = Note.query.get_or_404(id)
     form = NoteForm()
+    form.category.choices = categories_list
     if form.validate_on_submit():
+        selected_category_id = int(form.category.data[0])
         note.title = form.title.data
         note.content = form.content.data
+        note.category_id = selected_category_id
         db.session.add(note)
         db.session.commit()
         flash('The note has been updated')
@@ -191,6 +196,7 @@ def edit_note(id):
     if current_user.id == note.user_id:
         form.title.data = note.title
         form.content.data = note.content
+        selected_category_id = note.category_id
         return render_template('edit_note.html', form=form)
     else:
         flash("You don't have a permission to edit this note")
