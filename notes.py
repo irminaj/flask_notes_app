@@ -3,7 +3,7 @@ import os
 from flask import Flask, render_template, flash, url_for, redirect, request
 from flask_bootstrap import Bootstrap5
 from flask_wtf import FlaskForm
-from wtforms import StringField, SubmitField, PasswordField, BooleanField
+from wtforms import StringField, SubmitField, PasswordField, BooleanField, SelectField
 from wtforms.validators import DataRequired, Email, EqualTo, Length
 from wtforms.widgets import TextArea
 import email_validator
@@ -50,6 +50,7 @@ class LoginForm(FlaskForm):
 class NoteForm(FlaskForm):
     title = StringField('Title', validators=[DataRequired()])
     content = StringField('Content', validators=[DataRequired()], widget=TextArea())
+    category = SelectField('Category', choices=[])
     submit = SubmitField('Create')
 
 class CategoryForm(FlaskForm):
@@ -84,10 +85,6 @@ class User(db.Model, UserMixin):
     def __repr__(self):
         return '<User %r>' % self.username
 
-note_category = db.Table('note_category', 
-    db.Column('notes.id', db.Integer, db.ForeignKey('categories.id')),
-    db.Column('categories.id', db.Integer, db.ForeignKey('notes.id'))
-    )
 
 class Note(db.Model):
     __tablename__ = 'notes'
@@ -95,18 +92,22 @@ class Note(db.Model):
     title = db.Column(db.String(500))
     content = db.Column(db.String(10000))
     user_id = db.Column(db.Integer, db.ForeignKey('users.id'))
-    categories = db.relationship('Category', secondary=note_category, backref='notes')
+    category_id = db.Column(db.Integer, db.ForeignKey('categories.id'))
 
     def __repr__(self):
-        return '<Note %r>' % self.name
+        return '<Note %r>' % self.title
+
+### Problema cia ####
 
 class Category(db.Model):
     __tablename__ = 'categories'
     id = db.Column(db.Integer, primary_key = True)
     name = db.Column(db.String(100), unique=True)
+    notes = db.relationship('Note')
 
     def __repr__(self):
-        return '<Category %r>' % self.name
+        return self.name
+
 
 @app.route('/')
 def index():
@@ -161,12 +162,16 @@ def notes():
 @app.route('/add_note', methods=['GET', 'POST'])
 @login_required
 def add_note():
+    categories = db.session.query(Category).all()
+    categories_list = [(categ.id, categ.name) for categ in categories]
     form = NoteForm()
+    form.category.choices = categories_list
     if form.validate_on_submit():
-        note = Note(title=form.title.data, content=form.content.data, user_id=current_user.id)
+        selected_category_id = int(form.category.data[0])
+        note = Note(title=form.title.data, content=form.content.data, user_id=current_user.id, category_id=selected_category_id)
         db.session.add(note)
         db.session.commit()
-        return redirect(url_for('dashboard'))
+        return redirect(url_for('notes'))
     else:
         flash('You need to login')
     return render_template('add_note.html', form=form)
