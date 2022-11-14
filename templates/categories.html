@@ -1,26 +1,18 @@
-{% extends 'base.html' %}
+{% extends 'base.html' %} {% from 'bootstrap5/form.html' import render_form %} {% block content %} {{ super() }}
+<div style="margin-top: 50px" class="container d-grid gap-5">
+  <h2 class="text-center">Categories list</h2>
 
-{% from 'bootstrap5/form.html' import render_form %}
-
-{% block content %}
-{{ super() }}
-<div style="margin-top: 50px;" class="container">
-    <h3>Categories list</h3>
-
-    <ul>
-        {% for category in categories %}
-        <li class="c">
-            <div>
-                {{ category.name }}
-            </div>
-            <a href="{{ url_for('edit_category',id=category.id) }}" class="btn btn-outline-secondary btn-sm">Edit Category</a>
-            <a href="{{ url_for('delete_category',id=category.id) }}" class="btn btn-outline-danger btn-sm">Delete Category</a>
-        </li>
-        {% endfor %}
-        <a href="{{ url_for('add_categories') }}" class="btn btn-outline-secondary btn-sm">Add new category</a>
-    </ul>
-
-
-    
+  <ul class="container d-grid gap-3 list-group">
+    {% for category in categories %}
+    <li class="container border border-light bg-light list-group-item">
+      <div class="post-title">
+        <h3>{{ category.name }}</h3>
+      </div>
+      <a href="{{ url_for('edit_category',id=category.id) }}" class="btn btn-outline-secondary btn-sm">Edit Category</a>
+      <a href="{{ url_for('delete_category',id=category.id) }}" class="btn btn-outline-danger btn-sm">Delete Category</a>
+    </li>
+    {% endfor %}
+  </ul>
+  <a href="{{ url_for('add_categories') }}" class="btn btn-primary btn-sm">Add new category</a>
 </div>
 {% endblock %}
