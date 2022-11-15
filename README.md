@@ -1,15 +1,16 @@
 Flask_notes_app
 
 Installation
+
     Create virtual environment in project's root directory:
 
-    python -m venv venv
+        python -m venv venv
 
     Activate the virtual environment:
 
         For Linux / Mac:
 
-        source venv/bin/activate
+            source venv/bin/activate
 
         For Windows:
 
