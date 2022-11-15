@@ -5,6 +5,12 @@
 {% block content %}
 {{ super() }}
 <div style="margin-top: 50px;" class="container">
+    {% for message in get_flashed_messages() %}
+        <div class="alert alert-primary" role="alert">
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            {{ message }}
+        </div>
+    {% endfor %}
     <h2 class="text-center">Notes list</h2>
 
     <ul class="container d-grid gap-3 list-group">
