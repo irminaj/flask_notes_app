@@ -57,12 +57,6 @@ class CategoryForm(FlaskForm):
     name = StringField('Category name', validators=[DataRequired()])
     submit = SubmitField('Create')
 
-# SearchForm, paziureti ar reikes, bet panasu, kad ne 
-
-class SearchForm(FlaskForm):
-    searched = StringField('Searched', validators=[DataRequired()])
-    submit = SubmitField('Search')
-
 class User(db.Model, UserMixin):
     __tablename__ = 'users'
     id = db.Column(db.Integer, primary_key = True)
@@ -294,43 +288,15 @@ def search():
         flash('No posts were found')
         return render_template(url_for('notes', notes=notes))
 
-
-
-### Search options ###
-
-# @app.context_processor
-# def base():
-#     form = SearchForm()
-#     return dict(form=form)
-
-# @app.route('/search', methods=['POST', 'GET'])
-# def search():
-#     form = SearchForm()
-#     notes = Note.query
-#     if form.validate_on_submit():
-#         notes.searched = form.searched.data
-#         notes = notes.filter(Note.title.like('%' + notes.searched + '%'))
-#         notes = notes.order_by(Note.title).all()
-#         return render_template('search.html', form=form, searched = notes.searched, notes=notes)
-#     else:
-#         flash('No mathces were found')
-#         notes = Note.query.all()
-#         return render_template('notes.html', notes=notes)
-
-# @app.route('/search', methods=['GET', 'POST'])
-# def search():
-#     searched = request.args.get('searched')
-#     if searched:
-#         notes = Note.query.filter(Note.title.contains(searched))
-#     else:
-#         notes = Note.query.all()
-#     return render_template('notes.html', notes=notes)
-
-# @app.route('/search', methods=['GET', 'POST'])
-# def search():
-#     form=SearchForm()
-#     if request.method == 'POST' and form.validate_on_submit():
-#         return redirect((url_for('search', query=form.search.data)))
-#     return render_template('notes.html')
-
-
+### Filter notes by category ###
+    
+@app.route('/categories/filter_category<int:id>', methods=['GET', 'POST'])
+def filter_category(id):
+    category = Category.query.get_or_404(id)
+    if category.id:
+        notes = Note.query.filter(Note.category_id == category.id)
+        return render_template('notes.html', notes=notes)
+    else:
+        notes = Note.query.all()
+        flash('No posts were found')
+        return render_template(url_for('notes', notes=notes))
