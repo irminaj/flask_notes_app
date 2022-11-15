@@ -34,6 +34,8 @@ login_manager.login_view = 'login'
 def load_user(user_id):
     return User.query.get(int(user_id))
 
+#### Create forms ####
+
 class RegistrationForm(FlaskForm):
     email = EmailField('Email', validators=[DataRequired(), Length(1, 64), Email(email_validator)])
     username = StringField('Username', validators=[DataRequired(), Length(1, 64)])
@@ -64,6 +66,8 @@ class NoteForm(FlaskForm):
 class CategoryForm(FlaskForm):
     name = StringField('Category name', validators=[DataRequired()])
     submit = SubmitField('Create')
+
+#### Create models ####
 
 class User(db.Model, UserMixin):
     __tablename__ = 'users'
@@ -99,7 +103,6 @@ class Note(db.Model):
     def __repr__(self):
         return '<Note %r>' % self.title
 
-### Problema cia ####
 
 class Category(db.Model):
     __tablename__ = 'categories'
@@ -110,6 +113,8 @@ class Category(db.Model):
     def __repr__(self):
         return self.name
 
+
+#### Homepage, login and register  ####
 
 @app.route('/', methods=['GET', 'POST'])
 def show_notes():
@@ -144,6 +149,7 @@ def login():
             login_user(user, form.remember_me.data)
             next = request.args.get('next')
             if next is None or not next.startswith('/'):
+                flash(f'Hello, {user.username}, you are logged in')
                 next = url_for('notes')
             return redirect(next)
         flash('Invalid username or password.')
@@ -156,6 +162,8 @@ def logout():
     logout_user()
     flash('You have been logged out.')
     return redirect(url_for('login'))
+
+#### Add, edit, delete notes ####
 
 @app.route('/add_note', methods=['GET', 'POST'])
 @login_required
@@ -170,8 +178,6 @@ def add_note():
         db.session.add(note)
         db.session.commit()
         return redirect(url_for('notes'))
-    else:
-        flash('You need to login')
     return render_template('add_note.html', form=form)
 
 @app.route('/notes/edit/<int:id>', methods=['GET', 'POST'])
@@ -241,9 +247,8 @@ def add_categories():
         category = Category(name=form.name.data)
         db.session.add(category)
         db.session.commit()
+        flash('New category created')
         return redirect(url_for('categories'))
-    else:
-        flash('You need to login')
     return render_template('add_categories.html', form=form)
 
 ### Edit category ###
@@ -288,9 +293,9 @@ def search():
         notes = Note.query.filter(Note.title.contains(q))
         return render_template('notes.html', notes=notes)
     else: 
-        notes = Note.query.all()
         flash('No posts were found')
         return render_template(url_for('notes', notes=notes))
+   
 
 ### Filter notes by category ###
     
