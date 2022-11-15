@@ -2,14 +2,13 @@
 <nav class="navbar">
   <div class="container d-flex flex-row">
     <div class="d-flex flex-row">
-      <a class="nav-item">{{ render_nav_item('index', 'Home') }}</a>
+      <a class="nav-item">{{ render_nav_item('notes', 'Home') }}</a>
       <a class="nav-item">{{ render_nav_item('register', 'Register') }}</a>
       <a class="nav-item">{{ render_nav_item('login', 'Login') }}</a>
-      <a class="nav-item">{{ render_nav_item('logout', 'Log out')}}</a>
       <a class="nav-item">{{ render_nav_item('add_note', 'Add note') }}</a>
-      <a class="nav-item">{{ render_nav_item('dashboard', 'Dashboard') }}<a>
       <a class="nav-item">{{ render_nav_item('notes', 'Notes') }}</a>
       <a class="nav-item">{{ render_nav_item('categories', 'Categories') }}</a>
+      <a class="nav-item">{{ render_nav_item('logout', 'Log out')}}</a>
     </div>
     <div clas="justify-content-end">
       <form method="GET" action="{{ url_for('search') }}" class="d-flex">

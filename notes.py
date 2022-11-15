@@ -103,9 +103,15 @@ class Category(db.Model):
         return self.name
 
 
-@app.route('/')
-def index():
-    return render_template('index.html')
+@app.route('/', methods=['GET', 'POST'])
+def show_notes():
+    notes = Note.query.all()
+    return render_template('notes.html', notes=notes)
+
+@app.route('/notes', methods=['GET', 'POST'])
+def notes():
+    notes = Note.query.all()
+    return render_template('notes.html', notes=notes)
 
 @app.route('/register', methods=['GET', 'POST'])
 def register():
@@ -130,16 +136,11 @@ def login():
             login_user(user, form.remember_me.data)
             next = request.args.get('next')
             if next is None or not next.startswith('/'):
-                next = url_for('dashboard')
+                next = url_for('index')
             return redirect(next)
         flash('Invalid username or password.')
     return render_template('login.html', form=form)
 
-
-@app.route('/dashboard', methods=['GET', 'POST'])
-@login_required
-def dashboard():
-    return render_template('dashboard.html')
 
 @app.route('/logout')
 @login_required
@@ -147,11 +148,6 @@ def logout():
     logout_user()
     flash('You have been logged out.')
     return redirect(url_for('index'))
-
-@app.route('/notes', methods=['GET', 'POST'])
-def notes():
-    notes = Note.query.all()
-    return render_template('notes.html', notes=notes)
 
 @app.route('/add_note', methods=['GET', 'POST'])
 @login_required
