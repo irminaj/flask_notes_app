@@ -3,7 +3,7 @@ import os
 from flask import Flask, render_template, flash, url_for, redirect, request
 from flask_bootstrap import Bootstrap5
 from flask_wtf import FlaskForm
-from wtforms import StringField, SubmitField, PasswordField, BooleanField, SelectField
+from wtforms import StringField, SubmitField, PasswordField, BooleanField, SelectField, EmailField
 from wtforms.validators import DataRequired, Email, EqualTo, Length
 from wtforms.widgets import TextArea
 import email_validator
@@ -35,7 +35,7 @@ def load_user(user_id):
     return User.query.get(int(user_id))
 
 class RegistrationForm(FlaskForm):
-    email = StringField('Email', validators=[DataRequired(), Length(1, 64), Email()])
+    email = EmailField('Email', validators=[DataRequired(), Length(1, 64), Email(email_validator)])
     username = StringField('Username', validators=[DataRequired(), Length(1, 64)])
     password = PasswordField('Password', validators=[DataRequired(), EqualTo('password2', message="Passwords didn't match")])
     password2 = PasswordField('Confirm password', validators=[DataRequired()])
@@ -136,7 +136,7 @@ def login():
             login_user(user, form.remember_me.data)
             next = request.args.get('next')
             if next is None or not next.startswith('/'):
-                next = url_for('index')
+                next = url_for('notes')
             return redirect(next)
         flash('Invalid username or password.')
     return render_template('login.html', form=form)
@@ -147,7 +147,7 @@ def login():
 def logout():
     logout_user()
     flash('You have been logged out.')
-    return redirect(url_for('index'))
+    return redirect(url_for('login'))
 
 @app.route('/add_note', methods=['GET', 'POST'])
 @login_required
