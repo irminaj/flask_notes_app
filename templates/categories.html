@@ -1,5 +1,16 @@
-{% extends 'base.html' %} {% from 'bootstrap5/form.html' import render_form %} {% block content %} {{ super() }}
+{% extends 'base.html' %} 
+
+{% from 'bootstrap5/form.html' import render_form %} 
+
+{% block content %} 
+{{ super() }}
 <div style="margin-top: 50px" class="container d-grid gap-5">
+  {% for message in get_flashed_messages() %}
+        <div class="alert alert-primary" role="alert">
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            {{ message }}
+        </div>
+    {% endfor %}
   <h2 class="text-center">Categories list</h2>
 
   <ul class="container d-grid gap-3 list-group">
