@@ -1,0 +1,30 @@
+{% extends 'base.html' %} 
+
+{% from 'bootstrap5/form.html' import render_form %} 
+
+{% block content %} 
+{{ super() }}
+<div style="margin-top: 50px" class="container d-grid gap-5">
+  {% for message in get_flashed_messages() %}
+        <div class="alert alert-primary" role="alert">
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            {{ message }}
+        </div>
+    {% endfor %}
+  <h2 class="text-center">Categories list</h2>
+
+  <ul class="container d-grid gap-3 list-group">
+    {% for category in categories %}
+    <li class="container border border-light bg-light list-group-item">
+      <div class="post-title">
+        <h3>{{ category.name }}</h3>
+      </div>
+      <a href="{{ url_for('edit_category',id=category.id) }}" class="btn btn-outline-secondary btn-sm">Edit Category</a>
+      <a href="{{ url_for('delete_category',id=category.id) }}" class="btn btn-outline-danger btn-sm">Delete Category</a>
+      <a href="{{ url_for('filter_category', id=category.id) }}" class="btn btn-outline-primary btn-sm">Filter</a>
+    </li>
+    {% endfor %}
+  </ul>
+  <a href="{{ url_for('add_categories') }}" class="btn btn-primary btn-sm">Add new category</a>
+</div>
+{% endblock %}
