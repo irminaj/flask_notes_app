@@ -1,7 +1,7 @@
 Flask_notes_app
 
 Installation
-
+    
     Create virtual environment in project's root directory:
 
         python -m venv venv
@@ -32,7 +32,7 @@ Installation
 
     Alternative without setting environment variables:
 
-    flask --app notes --debug run
+        flask --app notes --debug run
 
 Software dependencies
 
